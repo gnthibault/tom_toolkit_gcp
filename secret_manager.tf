@@ -51,3 +51,11 @@ resource "google_project_iam_member" "project_wide_secretmanager_administrator" 
   role    = "roles/secretmanager.admin"
 	member  = "user:${var.administrator_email}"
 }
+
+# CI/CD deployer
+resource "google_secret_manager_secret_iam_member" "secret_cicd_env_file_access" {
+	project   = module.main_tom_toolkit_project.project_id
+  secret_id = google_secret_manager_secret.secret_tom_toolkit_env_file.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = google_service_account.cicd_service_account.member
+}

@@ -49,11 +49,10 @@ resource "google_storage_bucket" "tom_toolkit_static_files" {
 #   }
 }
 
-resource "google_storage_bucket_iam_member" "member" {
+resource "google_storage_bucket_iam_member" "application_sa_static_asset_bucket_access" {
   bucket = google_storage_bucket.tom_toolkit_static_files.name
   role   = "roles/storage.objectAdmin" #"roles/storage.admin"
   member = google_service_account.tom_toolkit_service_account.member
-
 }
 
 # Administrator
@@ -61,4 +60,11 @@ resource "google_project_iam_member" "project_wide_cloudstorage_administrator" {
   project = module.main_tom_toolkit_project.project_id
   role    = "roles/storage.admin"
 	member  = "user:${var.administrator_email}"
+}
+
+# CI/CD deployer
+resource "google_storage_bucket_iam_member" "cicd_static_asset_bucket_access" {
+  bucket = google_storage_bucket.tom_toolkit_static_files.name
+  role   = "roles/storage.objectAdmin" #"roles/storage.admin"
+  member    = google_service_account.cicd_service_account.member
 }

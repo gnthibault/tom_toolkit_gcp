@@ -53,6 +53,18 @@ resource "google_sql_user" "iam_service_account_user" {
   type     = "CLOUD_IAM_SERVICE_ACCOUNT"
 }
 
+# CICD deployer - needs to be able to run django migrate
+resource "google_project_iam_member" "cicd_sa_sql_user_on_project" {
+  project = module.main_tom_toolkit_project.project_id
+  role    = "roles/cloudsql.client"
+  member  = google_service_account.cicd_service_account.member
+}
+resource "google_sql_user" "cicd_sql_user" {
+	project  = module.main_tom_toolkit_project.project_id
+  name     = trimsuffix(google_service_account.cicd_service_account.email, ".gserviceaccount.com")
+  instance = google_sql_database_instance.main_tom_toolkit_db.name
+  type     = "CLOUD_IAM_SERVICE_ACCOUNT"
+}
 
 # Administrator
 resource "google_project_iam_member" "project_wide_cloudsql_administration" {
